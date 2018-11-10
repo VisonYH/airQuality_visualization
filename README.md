@@ -1,4 +1,3 @@
-# echarts_learn
 
 > A Vue.js project
 

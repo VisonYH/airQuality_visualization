@@ -1,8 +1,9 @@
-import axios from 'axios'
 import mapboxgl from 'mapbox-gl'
-export function addStationLayer (map) {
-  axios.get('http://localhost:8080/api/station/all/all').then(res => {
-    console.log(res)
+import getStation from '../api/getStation'
+export function addStationLayer (map, scale) {
+  getStation(callback, scale)
+
+  function callback (res) {
     map.addSource('station', {
       type: 'geojson',
       data: res.data
@@ -40,9 +41,12 @@ export function addStationLayer (map) {
     map.on('mouseleave', 'station', function () {
       map.getCanvas().style.cursor = ''
     })
-  })
+  }
 }
 
 export function removeStationLayer (map) {
-  map.removeLayer('station')
+  if (map.getLayer('station')) {
+    map.removeLayer('station')
+    map.removeSource('station')
+  }
 }

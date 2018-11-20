@@ -20,7 +20,7 @@ connection.connect(function(err){
 
 
 router.get('/:type/:timeScale/:time/:spaceScale/:address/:method', function(req, res) {
-    
+
 });
 
 // 获取站点
@@ -31,10 +31,8 @@ router.get('/station/:scale/:space', function(req, res) {
     connection.query(sql, (err, result) => {
         res.json(toGeojson(result));
     })
-    
+
 });
-
-
 
 function toGeojson(data) {
     let geojson =  {
@@ -50,9 +48,9 @@ function toGeojson(data) {
                 "coordinates": [item.lon, item.lat]
             },
             "properties": {
-                stationId, 
-                stationName, 
-                province, 
+                stationId,
+                stationName,
+                province,
                 city
             }
         };

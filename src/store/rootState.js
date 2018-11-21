@@ -1,6 +1,6 @@
 const state = {
-  msg: 'originalData',
-  spaceScaleArr: []
+  spaceScaleArr: [],
+  timeScaleArr: []
 }
 
 export default state

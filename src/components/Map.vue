@@ -1,6 +1,7 @@
 <template>
   <div class='mapContainer'>
-    <scale-choose></scale-choose>
+    <space-scale></space-scale>
+    <time-space></time-space>
     <div id='map'></div>
   </div>
 </template>
@@ -10,14 +11,16 @@ import mapboxgl from 'mapbox-gl'
 // import {addHeatLayer} from '../js/layers/heatLayer.js'
 import {addStateLayer} from '../js/layers/stateLayer.js'
 import {addStationLayer, removeStationLayer} from '../js/layers/stationLayer.js'
-import ScaleChoose from './ScaleChoose'
+import spaceScale from './spaceScale'
+import timeSpace from './timeSpace'
 import {mapGetters} from 'vuex'
 mapboxgl.accessToken = 'pk.eyJ1Ijoid2VpeWloYW8iLCJhIjoiY2l4ZzFrZjN1MDAxdTJ0bXZ4cmV1cjN3diJ9.8bL8EYDwiuQaBkVQuLUD4Q'
 let map
 export default {
   name: 'Map',
   components: {
-    ScaleChoose
+    spaceScale,
+    timeSpace
   },
   data () {
     return {}
@@ -27,7 +30,6 @@ export default {
   },
   watch: {
     spaceScale (val) {
-      console.log('watch =====', val)
       removeStationLayer(map)
       addStationLayer(map, val)
     }

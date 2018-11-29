@@ -1,8 +1,5 @@
 <style lang="less" scoped>
-.timescale {
-  position: absolute;
-  top: 80px;
-  left: 20px;
+.scale {
   z-index: 10;
   .el-cascader {
     width: 100px;
@@ -11,33 +8,30 @@
     min-width: 100px;
   }
   .el-button {
-    padding: 10px 10px;
-    font-size: 20px;
+    padding: 5px 5px;
+    font-size: 16px;
     border-radius: 50%;
   }
 }
 .sureBtn {
   float: right;
   position: relative;
-  bottom: 7px;
-}
-.el-popover__title {
-  float: left;
+  right: 30px;
 }
 </style>
 <template>
-  <div class='timescale'>
+  <div class='scale'>
     <el-popover
       placement="right-start"
       title="时间尺度"
       width="700"
-      trigger="manual"
+      trigger="click"
       v-model="visible"
     >
-      <el-button size="mini" class='sureBtn' @click="submitTime">确定</el-button>
+      <el-button size="mini" class='sureBtn' @click="submitTime" icon="el-icon-check" circle></el-button>
       <time-axis @change="timeScaleChange"></time-axis>
-      <el-button slot="reference" @click="visible = !visible">
-        <i class="el-icon-date"></i>
+      <el-button slot="reference" @click="visible = true">
+        <i class="el-icon-time"></i>
       </el-button>
     </el-popover>
   </div>
@@ -53,24 +47,26 @@ export default {
   data () {
     return {
       visible: false,
-      timeScaleTemp: null
+      timeScaleArrTemp: ['2015010100', '2016010100'],
+      timeScaleTemp: 'year'
     }
   },
   components: {
     timeAxis
   },
   computed: {
-    ...mapGetters(['timeScale'])
+    ...mapGetters(['timeScaleArr'])
   },
   methods: {
-    ...mapMutations(['mTimeScale']),
+    ...mapMutations(['mTimeScaleArr', 'mTimeScale']),
     submitTime () {
+      this.mTimeScaleArr(this.timeScaleArrTemp)
       this.mTimeScale(this.timeScaleTemp)
       this.visible = false
-      console.log(this.timeScale)
     },
-    timeScaleChange (timeScale) {
-      this.timeScaleTemp = timeScale
+    timeScaleChange (newV) {
+      this.timeScaleArrTemp = newV.timeInterval
+      this.timeScaleTemp = newV.scale
     }
   }
 }

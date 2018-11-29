@@ -1,6 +1,8 @@
 const state = {
   spaceScaleArr: [],
-  timeScaleArr: []
+  timeScaleArr: [],
+  timeScale: '',
+  spaceScale: ''
 }
 
 export default state

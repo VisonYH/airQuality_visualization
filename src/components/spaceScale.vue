@@ -1,8 +1,5 @@
 <style lang="less">
 .scale {
-  position: absolute;
-  top: 20px;
-  left: 20px;
   z-index: 10;
   .el-cascader {
     width: 100px;
@@ -11,32 +8,35 @@
     min-width: 100px;
   }
   .el-button {
-    padding: 10px 10px;
-    font-size: 20px;
+    padding: 5px 5px;
+    font-size: 16px;
     border-radius: 50%;
   }
 }
 .sureBtn {
   float: right;
   position: relative;
-  bottom: 7px;
+  bottom: 4px;
+  right: 10px;
 }
-.el-popover__title {
-  float: left;
+.cascader{
+  margin-top: 10px;
 }
 </style>
 <template>
   <div class='scale'>
     <el-popover
-      placement="right-start"
+      placement="bottom-start"
       title="空间尺度"
       width="200"
-      trigger="manual"
+      trigger="click"
       v-model="visible"
     >
-      <el-button size="mini" class='sureBtn' @click="submitSpace">确定</el-button>
-      <div>
+      <el-button size="mini" class='sureBtn' @click="submitSpace" icon="el-icon-check" circle></el-button>
+      <div class='cascader'>
         <el-cascader
+          placeholder='选择空间尺度'
+          size='mini'
           :options="data"
           filterable
           change-on-select
@@ -45,7 +45,7 @@
           @change="selectChange"
         ></el-cascader>
       </div>
-      <el-button slot="reference" @click="visible = !visible">
+      <el-button slot="reference" @click="visible = true">
         <i class="el-icon-location"></i>
       </el-button>
     </el-popover>
@@ -59,6 +59,11 @@ export default {
   created () {
     axios.get('http://localhost:8080/api/menu/spaceMenu').then((res) => {
       this.data = res.data
+      console.log(this.data)
+      this.data.unshift({
+        label: '全国',
+        value: 'all'
+      })
     })
   },
   data () {
@@ -72,16 +77,27 @@ export default {
   components: {
   },
   computed: {
-    ...mapGetters(['spaceScale'])
+    ...mapGetters(['spaceScaleArr'])
   },
   methods: {
-    ...mapMutations(['mSpaceScale']),
+    ...mapMutations(['mSpaceScaleArr', 'mSpaceScale']),
     selectChange (val) {
       this.selectItem = val
     },
     submitSpace () {
       this.visible = false
-      this.mSpaceScale(this.selectItem)
+      this.mSpaceScaleArr(this.selectItem)
+      if (this.selectItem[0] === 'all') {
+        this.mSpaceScale('all')
+      } else {
+        if (this.selectItem.length === 1) {
+          this.mSpaceScale('province')
+        } else if (this.selectItem.length === 2) {
+          this.mSpaceScale('city')
+        } else if (this.selectItem.length === 3) {
+          this.mSpaceScale('station')
+        }
+      }
     },
     handleOpen (key, keyPath) {
       console.log(key, keyPath)

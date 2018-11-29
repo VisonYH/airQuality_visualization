@@ -1,4 +1,5 @@
 var express = require('express');
+const {getStation, getStationData} = require('./utils')
 var router = express.Router();
 var mysql = require('mysql');
 var connection = mysql.createConnection({
@@ -6,22 +7,27 @@ var connection = mysql.createConnection({
     user:'root',
     password:'root',
     port:3306,
-    database:'air'
+    database:'air_quality',
+    multipleStatements: true
 });
 
 connection.connect(function(err){
     if(err){
-        console.log("链接失败");
+        console.log("链接失败")
         throw(err)
     } else {
-        console.log("链接成功");
+        console.log("链接成功")
     }
 })
 
-
-router.get('/:type/:timeScale/:time/:spaceScale/:address/:method', function(req, res) {
-
-});
+router.post('/data', function(req, res) {
+  let params = req.body;
+  let {type, timeScale, time, spaceScale, address, XVar} = params;
+  // console.log(type, timeScale, time, spaceScale, address);
+  getStationData(connection, type, spaceScale, address, timeScale, time, XVar, function (data) {
+    res.json(data)
+  })
+})
 
 // 获取站点
 router.get('/station/:scale/:space', function(req, res) {
@@ -31,7 +37,6 @@ router.get('/station/:scale/:space', function(req, res) {
     connection.query(sql, (err, result) => {
         res.json(toGeojson(result));
     })
-
 });
 
 function toGeojson(data) {

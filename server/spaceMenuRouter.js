@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
     user:'root',
     password:'root',
     port:3306,
-    database:'air'
+    database:'air_quality'
 });
 
 connection.connect(function(err){
@@ -58,7 +58,6 @@ router.get('/station/:city', function(req, res) {
   let sql = `SELECT DISTINCT stationName FROM station WHERE city='${req.params.city}'`;
   connection.query(sql, (err, result) => {
     let resData = [];
-    console.log(result)
     result.forEach(item => {
       let i = {};
       i.label = item.stationName;

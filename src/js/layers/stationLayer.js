@@ -1,7 +1,7 @@
 import mapboxgl from 'mapbox-gl'
 import getStation from '../api/getStation'
-export function addStationLayer (map, scale) {
-  getStation(callback, scale)
+export function addStationLayer (map, scaleArr, scale) {
+  getStation(callback, scaleArr, scale)
 
   function callback (res) {
     map.addSource('station', {

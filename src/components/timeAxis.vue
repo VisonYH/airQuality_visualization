@@ -62,12 +62,23 @@ export default {
   },
   watch: {
     selectedTimeInterval (newVal, oldVal) {
-      let format = d3.timeFormat('%Y-%m-%d-%H')
+      let format = d3.timeFormat('%Y%m%d%H')
       newVal = newVal.map(item => format(item))
-      this.$emit('change', newVal)
+      let scale
+      if (this.zoomLevel === 1) {
+        scale = 'year'
+      } else if (this.zoomLevel === 2) {
+        scale = 'month'
+      } else if (this.zoomLevel === 3) {
+        scale = 'day'
+      } else {
+        scale = 'hour'
+      }
+      this.$emit('change', {timeInterval: newVal, scale})
     },
     // 监听缩放级别的变化,变化就重绘
     zoomLevel (newLevel, oldLevel) {
+      console.log('newLevel', newLevel)
       // 这里的if语句是判断从大比例尺回到小比例尺时，获取小比例尺的时间范围
       if (newLevel === 2 && oldLevel === 3) {
         let format = d3.timeFormat('%Y')
@@ -199,7 +210,7 @@ export default {
     let svg = body.append('svg').attr('width', this.width).attr('height', this.height)
     let timeFormat = d3.timeFormat('%Y')
     this.xAxis = d3.axisBottom().scale(this.xScale).ticks(this.tick).tickFormat(timeFormat).tickSize(4, 6)
-    this.g = svg.append('g').attr('transform', 'translate(50, 70)')
+    this.g = svg.append('g').attr('transform', 'translate(30, 70)')
     this.innerG = this.g.append('g')
     this.innerG.selectAll('circle').data(this.circleData).attr('cx', (d) => d.cx).attr('r', (d) => d.r).enter().append('circle').attr('cx', (d) => d.cx).attr('cy', (d) => d.cy).attr('r', (d) => d.r).attr('fill', 'black')
     this.innerG.selectAll('rect').data(this.rectData).attr('x', (d) => d.x).attr('y', (d) => d.y).attr('width', (d) => d.width).enter().append('rect').attr('x', (d) => d.x).attr('y', (d) => d.y).attr('height', (d) => d.height).attr('width', (d) => d.width).attr('fill', 'rgba(255, 0, 0, 0.1)')

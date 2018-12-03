@@ -1,5 +1,5 @@
 var express = require('express');
-const {getStation, getStationData} = require('./utils')
+const {getStation, getStationData, spaceBasedData, timeBasedData} = require('./utils')
 var router = express.Router();
 var mysql = require('mysql');
 var connection = mysql.createConnection({
@@ -20,15 +20,30 @@ connection.connect(function(err){
     }
 })
 
-router.post('/data', function(req, res) {
+// router.post('/data', function(req, res) {
+//   let params = req.body;
+//   let {type, timeScale, time, spaceScale, address, XVar} = params;
+//   // console.log(type, timeScale, time, spaceScale, address);
+//   getStationData(connection, type, spaceScale, address, timeScale, time, XVar, function (data) {
+//     res.json(data)
+//   })
+// })
+router.post('/data/space', function(req, res) {
   let params = req.body;
-  let {type, timeScale, time, spaceScale, address, XVar} = params;
+  let {type, timeScale, time, spaceScale, address} = params;
   // console.log(type, timeScale, time, spaceScale, address);
-  getStationData(connection, type, spaceScale, address, timeScale, time, XVar, function (data) {
+  spaceBasedData(connection, type, spaceScale, address, timeScale, time, function (data) {
     res.json(data)
   })
 })
-
+router.post('/data/time', function(req, res) {
+  let params = req.body;
+  let {type, timeScale, time, spaceScale, address} = params;
+  // console.log(type, timeScale, time, spaceScale, address);
+  timeBasedData(connection, type, spaceScale, address, timeScale, time, function (data) {
+    res.json(data)
+  })
+})
 // 获取站点
 router.get('/station/:scale/:space', function(req, res) {
     let params = req.params;

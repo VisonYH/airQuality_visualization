@@ -42,6 +42,9 @@ connection.query('SELECT DISTINCT province from station', function(err, province
       })
     })
     configData.push(item);
+    // setTimeout(function() {
+    //   fs.writeFile('config.json', JSON.stringify(configData), () => {})
+    // }, 10000)
   })
 })
 router.get('/spaceMenu', function(req, res) {

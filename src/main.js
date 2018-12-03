@@ -21,6 +21,7 @@ Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
 Vue.use(Select)
 Vue.use(Option)
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

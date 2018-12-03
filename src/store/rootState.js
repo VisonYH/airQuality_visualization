@@ -2,7 +2,8 @@ const state = {
   spaceScaleArr: [],
   timeScaleArr: [],
   timeScale: '',
-  spaceScale: ''
+  spaceScale: '',
+  map: null
 }
 
 export default state

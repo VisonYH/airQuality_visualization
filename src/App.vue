@@ -1,12 +1,21 @@
 <template>
   <div id="app">
     <router-view/>
+    <Panels :map='map'></Panels>
   </div>
 </template>
 
 <script>
+import Panels from './components/panels'
+import {mapGetters} from 'vuex'
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    Panels
+  },
+  computed: {
+    ...mapGetters(['map'])
+  }
 }
 </script>
 

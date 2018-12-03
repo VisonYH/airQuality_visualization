@@ -53,18 +53,11 @@
 </template>
 
 <script>
-import axios from 'axios'
+import getSpaceMenu from '../js/api/getSpaceMenu.js'
 import {mapGetters, mapMutations} from 'vuex'
 export default {
-  created () {
-    axios.get('http://localhost:8080/api/menu/spaceMenu').then((res) => {
-      this.data = res.data
-      console.log(this.data)
-      this.data.unshift({
-        label: '全国',
-        value: 'all'
-      })
-    })
+  async created () {
+    this.data = await getSpaceMenu()
   },
   data () {
     return {
@@ -88,6 +81,7 @@ export default {
       this.visible = false
       this.mSpaceScaleArr(this.selectItem)
       if (this.selectItem[0] === 'all') {
+        this.mSpaceScaleArr(['all'])
         this.mSpaceScale('all')
       } else {
         if (this.selectItem.length === 1) {

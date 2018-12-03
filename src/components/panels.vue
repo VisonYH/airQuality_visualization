@@ -1,6 +1,8 @@
 <style lang="less">
 .tables{
-  position: relative;
+  position: absolute;
+  top: 0;
+  z-index: 1000;
   .btn{
     position: absolute;
     top: 10px;
@@ -68,11 +70,12 @@
               v-for="item in config"
               :key="item"
               :label="item"
+              :disabled="(item === 'time' && timeDisabled) || (item === 'space' && spaceDisabled)"
               :value="item">
             </el-option>
           </el-select>
         </div>
-        <chart :chartData='chartData'></chart>
+        <chart :chartData='chartData' :type='selectedConfig[2]'></chart>
         <el-button slot="reference" class='arrow'>
           <i class="el-icon-arrow-down" ref="iconClass"></i>
         </el-button>
@@ -85,9 +88,11 @@
 import spaceScale from './spaceScale'
 import timeSpace from './timeScale'
 import chart from './chart'
-import axios from 'axios'
+import getChartData from '../js/api/getChartData.js'
 import {addStationLayer, removeStationLayer} from '../js/layers/stationLayer.js'
+import {addStateLayer, removeStateLayer} from '../js/layers/stateLayer.js'
 import {mapGetters} from 'vuex'
+import { Notification } from 'element-ui'
 export default {
   name: 'Tables',
   props: {
@@ -101,9 +106,11 @@ export default {
   data () {
     return {
       placeholderArr: ['数据类型', '图表类型', '自变量', '因变量'],
-      configArr: [['AQI', 'PM2.5', 'PM10'], ['pie'], ['time', 'space'], ['area', 'height']],
-      selectedConfig: ['', '', '', ''],
-      chartData: null
+      configArr: [['AQI', 'PM2.5', 'PM10'], ['pie'], ['time', 'space']],
+      selectedConfig: ['', '', ''],
+      chartData: null,
+      timeDisabled: false,
+      spaceDisabled: false
     }
   },
   computed: {
@@ -112,10 +119,27 @@ export default {
   watch: {
     spaceScaleArr (arr) {
       removeStationLayer(this.map)
+      removeStateLayer(this.map)
+      addStateLayer(this.map, this.spaceScale, this.spaceScaleArr[this.spaceScaleArr.length - 1])
       addStationLayer(this.map, arr, this.spaceScale)
     },
     selectedConfig (newV, oldV) {
-      console.log(newV)
+      console.log('newV', newV)
+    },
+    timeScale (newScale, old) {
+      if (newScale === 'hour') {
+        this.timeDisabled = true
+      } else {
+        this.timeDisabled = false
+      }
+    },
+    spaceScale (newScale, old) {
+      console.log('newSpaceSCale', newScale)
+      if (newScale === 'station') {
+        this.spaceDisabled = true
+      } else {
+        this.spaceDisabled = false
+      }
     }
   },
   mounted () {
@@ -127,29 +151,36 @@ export default {
     hideTable (e) {
       this.$refs.iconClass.className = 'el-icon-arrow-down'
     },
-    finishConfig () {
-      console.log(this.selectedConfig, this.spaceScaleArr, this.timeScaleArr, this.timeScale, this.spaceScale)
+    async finishConfig () {
+      if (this.timeScaleArr.length === 0 || this.spaceScaleArr.length === 0 || this.selectedConfig[0] === '' || this.selectedConfig[1] === 0 || this.selectedConfig[2] === 0) {
+        console.log(this.timeScaleArr, this.spaceScaleArr, this.selectedConfig)
+        const h = this.$createElement
+        Notification({
+          title: '提示',
+          type: 'warning',
+          message: h('p', {style: 'color: teal'}, '请先配置图表属性')
+        })
+        return
+      }
       let time
       if (this.timeScale === 'year') {
         time = this.timeScaleArr[0].substring(0, 4)
       } else if (this.timeScale === 'month') {
         time = this.timeScaleArr[0].substring(0, 6)
       } else if (this.timeScale === 'day') {
-        time = this.timeScaleArr[0].substring(0, 6)
+        time = this.timeScaleArr[0].substring(0, 8)
       } else {
         time = this.timeScaleArr[0]
       }
-      axios.post(`http://localhost:8080/api/history/data`, {
-        type: this.selectedConfig[0],
-        timeScale: this.timeScale,
-        time,
-        spaceScale: this.spaceScale,
-        address: this.spaceScaleArr[this.spaceScaleArr.length - 1],
-        XVar: this.selectedConfig[2]
-      }).then(res => {
-        this.chartData = res.data
-        console.log(res)
-      })
+      this.chartData = await getChartData(this.selectedConfig[0], this.timeScale, time, this.spaceScale, this.spaceScaleArr[this.spaceScaleArr.length - 1], this.selectedConfig[2])
+      if (this.chartData.length === 0) {
+        const h = this.$createElement
+        Notification({
+          title: '提示',
+          type: 'info',
+          message: h('p', {style: 'color: teal'}, '暂无数据')
+        })
+      }
     }
   }
 }

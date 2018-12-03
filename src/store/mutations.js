@@ -13,3 +13,7 @@ export const mTimeScale = (state, payload) => {
 export const mSpaceScale = (state, payload) => {
   state.spaceScale = payload
 }
+
+export const mMap = (state, payload) => {
+  state.map = payload
+}

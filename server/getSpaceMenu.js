@@ -25,26 +25,37 @@ connection.query('SELECT DISTINCT province from station', function(err, province
     item.label = province.province;
     item.value = province.province;
     item.children = [];
-    let sql = `SELECT DISTINCT city from station WHERE province="${province.province}"`;
-    connection.query(sql, function(err, cities) {
-      cities.forEach(city => {
-        let temp = {};
-        temp.label = city.city;
-        temp.value = city.city;
-        let sql = `SELECT DISTINCT stationName from station WHERE city="${city.city}"`;
-        connection.query(sql, function(err, stations) {
-          temp.children = []
-          stations.forEach(station => {
-            temp.children.push({label: station.stationName, value: station.stationName})
-          })
-          item.children.push(temp);
+    let sql = '';
+
+    if (province.province === '北京市' || province.province === '重庆市' || province.province === '上海市' || province.province === '天津市') {
+      sql = `SELECT DISTINCT stationName from station WHERE province="${province.province}"`;
+      connection.query(sql, function(err, stations) {
+        stations.forEach(station => {
+          item.children.push({label: station.stationName, value: station.stationName});
         })
       })
-    })
+    } else {
+      sql = `SELECT DISTINCT city from station WHERE province="${province.province}"`;
+      connection.query(sql, function(err, cities) {
+        cities.forEach(city => {
+          let temp = {};
+          temp.label = city.city;
+          temp.value = city.city;
+          let sql = `SELECT DISTINCT stationName from station WHERE city="${city.city}"`;
+          connection.query(sql, function(err, stations) {
+            temp.children = []
+            stations.forEach(station => {
+              temp.children.push({label: station.stationName, value: station.stationName})
+            })
+            item.children.push(temp);
+          })
+        })
+      })
+    }
     configData.push(item);
-    // setTimeout(function() {
-    //   fs.writeFile('config.json', JSON.stringify(configData), () => {})
-    // }, 10000)
+    setTimeout(function() {
+      fs.writeFile('config.json', JSON.stringify(configData), () => {})
+    }, 10000)
   })
 })
 router.get('/spaceMenu', function(req, res) {

@@ -3,3 +3,8 @@ export const timeScaleArr = state => state.timeScaleArr
 export const timeScale = state => state.timeScale
 export const spaceScale = state => state.spaceScale
 export const map = state => state.map
+export const chartCat = state => state.chartCat
+export const catType = state => state.catType
+export const chartData = state => state.chartData
+export const chart = state => state.chart
+export const xVar = state => state.xVar

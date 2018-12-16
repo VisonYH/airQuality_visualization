@@ -4,23 +4,34 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store/index'
-import { Cascader, Input, Button, Menu, MenuItem, MenuItemGroup, Submenu, Popover, Radio, RadioGroup, Dropdown, DropdownMenu, DropdownItem, Select, Option } from 'element-ui'
-
-Vue.use(Cascader)
+import 'iview/dist/styles/iview.css'
+import { Input, Button, Popover, Radio, RadioGroup, Dropdown, DropdownMenu, DropdownItem } from 'element-ui'
+import { Tabs, TabPane, Header, Icon, Tag, Table, Select, Option, Notice, Cascader } from 'iview'
+Vue.component('Tabs', Tabs)
+Vue.component('TabPane', TabPane)
+Vue.component('Header', Header)
+Vue.component('Icon', Icon)
+Vue.component('Tag', Tag)
+Vue.component('Table', Table)
+Vue.component('Select', Select)
+Vue.component('Option', Option)
+Vue.component('Cascader', Cascader)
+Vue.prototype.$Notice = Notice
+// Vue.use(Cascader)
 Vue.use(Input)
 Vue.use(Button)
-Vue.use(Menu)
-Vue.use(MenuItemGroup)
-Vue.use(Submenu)
-Vue.use(MenuItem)
+// Vue.use(Menu)
+// Vue.use(MenuItemGroup)
+// Vue.use(Submenu)
+// Vue.use(MenuItem)
 Vue.use(Popover)
 Vue.use(Radio)
 Vue.use(RadioGroup)
 Vue.use(Dropdown)
 Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
-Vue.use(Select)
-Vue.use(Option)
+// Vue.use(Select)
+// Vue.use(Option)
 
 Vue.config.productionTip = false
 

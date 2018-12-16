@@ -1,5 +1,5 @@
 <template>
-  <div class="timeAxis">
+  <div class="timeAxis" ref="timeAxis">
   </div>
 </template>
 
@@ -22,17 +22,16 @@ export default {
   props: {
     height: {
       type: Number,
-      default: 100
-    },
-    width: {
-      type: Number,
-      default: 700
+      default: 80
     }
   },
   computed: {
+    width () {
+      return this.$refs.timeAxis.clientWidth
+    },
     // 比例尺
     xScale () {
-      let xScale = d3.scaleTime().domain(this.timeInterval).range([0, 630])
+      let xScale = d3.scaleTime().domain(this.timeInterval).range([0, this.width - 100])
       return xScale
     },
     // 滚动组件的圆的定位数据
@@ -50,8 +49,8 @@ export default {
     // 滚动组件的矩形定位数据
     rectData () {
       return [{x: 0,
-        y: -50,
-        height: 50,
+        y: -30,
+        height: 30,
         width: this.tickValue[1]
       }]
     },
@@ -123,13 +122,13 @@ export default {
           dragBound[index - 1] = (this.xScale(dragBound[index - 1]) + this.xScale(item)) / 2
         }
       })
-      dragBound[dragBound.length - 1] = 630
+      dragBound[dragBound.length - 1] = this.width
       return dragBound
     },
     // 拖动事件逻辑
     _bindDragEvent (innerG) {
       let dragHandler = d3.drag().on('drag', () => {
-        if ((this.circleData[0].cx + d3.event.dx >= 0) && (this.circleData[1].cx + d3.event.dx <= 630)) {
+        if ((this.circleData[0].cx + d3.event.dx >= 0) && (this.circleData[1].cx + d3.event.dx <= this.width)) {
           this.circleData[0].cx += d3.event.dx
           this.circleData[1].cx += d3.event.dx
           this.circleData[0].cx = this.circleData[0].cx >= 0 ? this.circleData[0].cx : 0
@@ -204,16 +203,15 @@ export default {
     }
   },
   mounted () {
-    let bodyDom = document.querySelector('.timeAxis')
-    let body = d3.select(bodyDom)
+    let timeAxis = d3.select('.timeAxis')
     this.tick = this.tickObj[0]
-    let svg = body.append('svg').attr('width', this.width).attr('height', this.height)
+    let svg = timeAxis.append('svg').attr('width', '100%').attr('height', this.height)
     let timeFormat = d3.timeFormat('%Y')
     this.xAxis = d3.axisBottom().scale(this.xScale).ticks(this.tick).tickFormat(timeFormat).tickSize(4, 6)
-    this.g = svg.append('g').attr('transform', 'translate(30, 70)')
+    this.g = svg.append('g').attr('transform', 'translate(30, 50)').attr('class', 'axis')
     this.innerG = this.g.append('g')
-    this.innerG.selectAll('circle').data(this.circleData).attr('cx', (d) => d.cx).attr('r', (d) => d.r).enter().append('circle').attr('cx', (d) => d.cx).attr('cy', (d) => d.cy).attr('r', (d) => d.r).attr('fill', 'black')
-    this.innerG.selectAll('rect').data(this.rectData).attr('x', (d) => d.x).attr('y', (d) => d.y).attr('width', (d) => d.width).enter().append('rect').attr('x', (d) => d.x).attr('y', (d) => d.y).attr('height', (d) => d.height).attr('width', (d) => d.width).attr('fill', 'rgba(255, 0, 0, 0.1)')
+    this.innerG.selectAll('circle').data(this.circleData).attr('cx', (d) => d.cx).attr('r', (d) => d.r).enter().append('circle').attr('cx', (d) => d.cx).attr('cy', (d) => d.cy).attr('r', (d) => d.r).attr('fill', 'rgba(255, 205, 50, 0.5)')
+    this.innerG.selectAll('rect').data(this.rectData).attr('x', (d) => d.x).attr('y', (d) => d.y).attr('width', (d) => d.width).enter().append('rect').attr('x', (d) => d.x).attr('y', (d) => d.y).attr('height', (d) => d.height).attr('width', (d) => d.width).attr('fill', 'rgba(255, 205, 50, 0.2)')
     this._bindDragEvent(this.innerG)
     this._bindZoomEvent(this.innerG, this.g, this.xAxis)
     this.xAxis(this.g)
@@ -222,8 +220,8 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.hello{
-  text-align: center
+<style>
+.axis line, .axis path, .axis text{
+  stroke: #ffcd32!important;
 }
 </style>

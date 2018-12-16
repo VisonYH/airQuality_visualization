@@ -20,14 +20,6 @@ connection.connect(function(err){
     }
 })
 
-// router.post('/data', function(req, res) {
-//   let params = req.body;
-//   let {type, timeScale, time, spaceScale, address, XVar} = params;
-//   // console.log(type, timeScale, time, spaceScale, address);
-//   getStationData(connection, type, spaceScale, address, timeScale, time, XVar, function (data) {
-//     res.json(data)
-//   })
-// })
 router.post('/data/space', function(req, res) {
   let params = req.body;
   let {type, timeScale, time, spaceScale, address} = params;
@@ -48,6 +40,7 @@ router.post('/data/time', function(req, res) {
 router.get('/station/:scale/:space', function(req, res) {
     let params = req.params;
     let {scale, space} = params;
+    console.log('scale, space', scale, space)
     let sql =  scale !== 'all' ? `SELECT s.* FROM station as s WHERE ${scale}='${space}'` : `SELECT * FROM station`;
     connection.query(sql, (err, result) => {
         res.json(toGeojson(result));

@@ -80,14 +80,18 @@ exports.getStationData = function (connection, type, spaceScale, address, timeSc
 }
 exports.spaceBasedData = function (connection, type, spaceScale, address, timeScale, time, callback) {
   console.log(type, spaceScale, address, timeScale, time);
+  if (address === '北京市' || address === '重庆市' || address === '上海市' || address === '天津市') {
+    address = address.substring(0, 2)
+    spaceScale = 'city'
+  }
   let sql = ''
   let XVar = formatX('space', spaceScale, timeScale);
   if (timeScale === 'year' || timeScale === 'month') {
     let tableName = formatTableName(time, timeScale);
     if (spaceScale === 'all') {
-      sql = `SELECT AVG(value) AS value, ${XVar} as address FROM ${tableName} GROUP BY ${XVar};`
+      sql = `SELECT AVG(value) AS value, ${XVar} as address FROM ${tableName} WHERE type='${type}' GROUP BY ${XVar};`
     } else {
-      sql = `SELECT AVG(value) AS value, ${XVar} as address FROM ${tableName} WHERE ${spaceScale}='${address}' GROUP BY ${XVar};`
+      sql = `SELECT AVG(value) AS value, ${XVar} as address FROM ${tableName} WHERE ${spaceScale}='${address}' AND type='${type}' GROUP BY ${XVar};`
     }
     connection.query(sql, function(err, result) {
       result.map(item => {
@@ -145,7 +149,7 @@ exports.timeBasedData = function (connection, type, spaceScale, address, timeSca
     if (spaceScale === 'station') {
       connection.query(`SELECT stationId FROM station WHERE stationName='${address}'`, (err, res) => {
         let stationId = res[0].stationId
-        sql = `SELECT AVG(value) AS value, ${XVar} as date FROM ${tableName} WHERE stationId='${stationId}' GROUP BY ${XVar};`
+        sql = `SELECT AVG(value) AS value, ${XVar} as date FROM ${tableName} WHERE stationId='${stationId}' AND type='${type}' GROUP BY ${XVar};`
         console.log(sql)
         connection.query(sql, function(err, result) {
           result.map(item => {
@@ -157,9 +161,9 @@ exports.timeBasedData = function (connection, type, spaceScale, address, timeSca
       })
     } else {
       if (spaceScale === 'all') {
-        sql = `SELECT AVG(value) AS value, ${XVar} as date FROM ${tableName} GROUP BY ${XVar};`
+        sql = `SELECT AVG(value) AS value, ${XVar} as date FROM ${tableName} WHERE type='${type}' GROUP BY ${XVar};`
       }  else {
-        sql = `SELECT AVG(value) AS value, ${XVar} as date FROM ${tableName} WHERE ${spaceScale}='${address}' GROUP BY ${XVar};`
+        sql = `SELECT AVG(value) AS value, ${XVar} as date FROM ${tableName} WHERE ${spaceScale}='${address}' AND type='${type}' GROUP BY ${XVar};`
       }
       console.log(sql)
       connection.query(sql, function(err, result) {
@@ -175,7 +179,7 @@ exports.timeBasedData = function (connection, type, spaceScale, address, timeSca
       if (spaceScale === 'station') {
         connection.query(`SELECT stationId FROM station WHERE stationName='${address}'`, (err, res) => {
           let stationId = res[0].stationId
-          sql = `SELECT value, ${XVar} as date FROM ${stationId} WHERE date='${time}';`
+          sql = `SELECT value, ${XVar} as date FROM ${stationId} WHERE date='${time}' AND type='${type}';`
           connection.query(sql, function(err, result) {
             result = catgorifyH(result, 'date')
             callback(result);

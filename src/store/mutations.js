@@ -17,3 +17,23 @@ export const mSpaceScale = (state, payload) => {
 export const mMap = (state, payload) => {
   state.map = payload
 }
+
+export const mChartCat = (state, payload) => {
+  state.chartCat = payload
+}
+
+export const mCatType = (state, payload) => {
+  state.catType = payload
+}
+
+export const mChartData = (state, payload) => {
+  state.chartData = payload
+}
+
+export const mChart = (state, payload) => {
+  state.chart = payload
+}
+
+export const mXVar = (state, payload) => {
+  state.xVar = payload
+}

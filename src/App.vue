@@ -1,17 +1,32 @@
 <template>
   <div id="app">
     <router-view/>
-    <Panels :map='map'></Panels>
+    <left-panel></left-panel>
+    <space-scale></space-scale>
+    <layer-manager></layer-manager>
+    <time-scale></time-scale>
+    <!-- <Panels :map='map'></Panels> -->
+    <cat-type></cat-type>
   </div>
 </template>
 
 <script>
-import Panels from './components/panels'
+// import Panels from './components/panels'
+import catType from './components/controls/typeControl'
+import SpaceScale from './components/controls/spaceControl'
+import TimeScale from './components/controls/timeControl'
+import LayerManager from './components/controls/layerControl'
+import LeftPanel from './components/leftPanel'
 import {mapGetters} from 'vuex'
 export default {
   name: 'App',
   components: {
-    Panels
+    // Panels,
+    LayerManager,
+    catType,
+    SpaceScale,
+    TimeScale,
+    LeftPanel
   },
   computed: {
     ...mapGetters(['map'])
@@ -19,7 +34,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang='less' scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

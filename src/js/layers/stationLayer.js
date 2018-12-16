@@ -13,7 +13,7 @@ export function addStationLayer (map, scaleArr, scale) {
       'type': 'circle',
       'source': 'station',
       'paint': {
-        'circle-radius': 3,
+        'circle-radius': 5,
         'circle-color': '#B42222'
       }
     })

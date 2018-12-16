@@ -6,8 +6,8 @@
 
 <script>
 import mapboxgl from 'mapbox-gl'
-// import {addHeatLayer} from '../js/layers/heatLayer.js'
 import {addStateLayer} from '../js/layers/stateLayer.js'
+// import {addHeatLayer} from '../js/layers/heatLayer.js'
 import {mapGetters, mapMutations} from 'vuex'
 mapboxgl.accessToken = 'pk.eyJ1Ijoid2VpeWloYW8iLCJhIjoiY2l4ZzFrZjN1MDAxdTJ0bXZ4cmV1cjN3diJ9.8bL8EYDwiuQaBkVQuLUD4Q'
 export default {
@@ -19,7 +19,7 @@ export default {
   watch: {
   },
   computed: {
-    ...mapGetters(['spaceScale', 'spaceScaleArr'])
+    ...mapGetters(['spaceScale', 'spaceScaleArr', 'catType'])
   },
   methods: {
     ...mapMutations(['mMap'])
@@ -32,7 +32,10 @@ export default {
       zoom: 2.5
     })
     map.on('load', () => {
-      // addHeatLayer(map)
+      // let scale = this.spaceScale ? this.spaceScale : 'all'
+      // let address = this.spaceScaleArr ? this.spaceScaleArr : 'all'
+      // let catType = this.catType ? this.catType : 'AQI'
+      // addHeatLayer(map, scale, address, catType)
       addStateLayer(map, this.spaceScale, this.spaceScaleArr[this.spaceScaleArr.length - 1])
     })
     this.mMap(map)
@@ -40,12 +43,18 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang='less'>
 .mapContainer {
   width: 100%;
   height: 100%;
 }
 #map {
   height: 100%;
+  width: 100%;
+  position:absolute;
+  top:0;
+  bottom:0;
+  right: 0;
+  left: 0;
 }
 </style>

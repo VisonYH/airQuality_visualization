@@ -249,6 +249,7 @@ function flatten (arr) {
   }
   return res;
 }
+exports.flatten = flatten
 function catgorifyH (arr, XVar) {
   let catObj = {};
 

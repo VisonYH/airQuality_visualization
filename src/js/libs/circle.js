@@ -111,7 +111,12 @@ export default class Circle {
 
   getRadiusByZoom (zoom, spaceScale) {
     if (spaceScale === 'all') {
-      if (zoom > 5) {
+      if (zoom > 6) {
+        this.newCircle.attr('display', 'block')
+        this.showInnerText = true
+        this.innerRadius = 30
+        this.outerRadius = 40
+      } else if (zoom > 5 && zoom <= 6) {
         this.newCircle.attr('display', 'block')
         this.showInnerText = true
         this.innerRadius = 20
@@ -135,11 +140,16 @@ export default class Circle {
         this.newCircle.attr('display', 'none')
       }
     } else if (spaceScale === 'province') {
-      if (zoom > 5) {
+      if (zoom > 6) {
         this.newCircle.attr('display', 'block')
         this.showInnerText = true
-        this.innerRadius = 10
-        this.outerRadius = 20
+        this.innerRadius = 20
+        this.outerRadius = 30
+      } else if (zoom > 5 && zoom <= 6) {
+        this.newCircle.attr('display', 'block')
+        this.showInnerText = true
+        this.innerRadius = 15
+        this.outerRadius = 25
       } else if (zoom > 3.5 && zoom <= 5) {
         this.newCircle.attr('display', 'block')
         this.showInnerText = false

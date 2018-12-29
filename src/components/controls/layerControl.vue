@@ -55,7 +55,7 @@ export default {
   mounted () {
   },
   watch: {
-    spaceScale () {
+    spaceScaleArr () {
       this.drawlayer()
     },
     timeScaleArr () {

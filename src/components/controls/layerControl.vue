@@ -14,10 +14,13 @@ import {mapGetters} from 'vuex'
 import {addCircleLayer, removeCircleLayer} from '../../js/layers/circleLayer.js'
 import {addHeatLayer, removeHeatLayer} from '../../js/layers/heatLayer.js'
 import {addStationLayer, removeStationLayer} from '../../js/layers/stationLayer.js'
+import {addYearLayer, removeYearLayer} from '../../js/layers/yearsCircleLayer.js'
+import {addHeat3dLayer, removeHeat3dLayer} from '../../js/layers/heat3d.js'
+// import { removeStateLayer } from '../../js/layers/stateLayer.js'
 export default {
   data () {
     return {
-      types: ['热力图', '环图', '站点'],
+      types: ['热力图', '3d热图', '环图', '站点', '年轮图'],
       currentLayer: 0,
       activeIndex: null
     }
@@ -32,14 +35,17 @@ export default {
       this.drawlayer()
     },
     removeOtherLayer () {
+      // removeStateLayer(this.map)
       removeHeatLayer(this.map)
       removeStationLayer(this.map)
       removeCircleLayer(this.map)
+      removeYearLayer(this.map)
+      removeHeat3dLayer(this.map)
     },
     drawlayer () {
       if (this.currentLayer === '站点') {
         this.removeOtherLayer()
-        addStationLayer(this.map, this.spaceScaleArr, this.spaceScale)
+        addStationLayer(this.map, this.spaceScaleArr, this.spaceScale, this.catType)
       } else if (this.currentLayer === '热力图') {
         this.removeOtherLayer()
         let scale = this.spaceScale ? this.spaceScale : 'all'
@@ -49,6 +55,16 @@ export default {
       } else if (this.currentLayer === '环图') {
         this.removeOtherLayer()
         addCircleLayer(this.map, this.spaceScale, this.spaceScaleArr[this.spaceScaleArr.length - 1], this.timeScale, this.timeScaleArr, this.catType)
+      } else if (this.currentLayer === '年轮图') {
+        this.removeOtherLayer()
+        let scale = this.spaceScale ? this.spaceScale : 'all'
+        let address = this.spaceScaleArr ? this.spaceScaleArr : 'all'
+        addYearLayer(this.map, scale, address, this.catType)
+      } else if (this.currentLayer === '3d热图') {
+        this.removeOtherLayer()
+        let scale = this.spaceScale ? this.spaceScale : 'all'
+        let address = this.spaceScaleArr ? this.spaceScaleArr : 'all'
+        addHeat3dLayer(this.map, scale, address, this.catType)
       }
     }
   },

@@ -22,7 +22,7 @@ import roseChart from '../js/charts/rose'
 export default {
   name: 'chart',
   computed: {
-    ...mapGetters(['timeScale', 'spaceScale', 'spaceScaleArr', 'chartCat', 'chartData', 'chart', 'xVar'])
+    ...mapGetters(['timeScale', 'spaceScale', 'spaceScaleArr', 'timeScaleArr', 'chartCat', 'chartData', 'chart', 'xVar'])
   },
   methods: {
     ...mapMutations(['mChart'])
@@ -35,7 +35,7 @@ export default {
       if (this.xVar === 'time') {
         if (this.chartCat === 'rose') {
           this.mChart(roseChart(newData, document.getElementById('chartContainer')))
-        } else {
+        } else if (this.chartCat === 'line') {
           this.mChart(lineChart(newData, document.getElementById('chartContainer'), this.timeScale))
         }
       } else if (this.xVar === 'space') {

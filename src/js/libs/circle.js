@@ -119,18 +119,18 @@ export default class Circle {
       } else if (zoom > 5 && zoom <= 6) {
         this.newCircle.attr('display', 'block')
         this.showInnerText = true
-        this.innerRadius = 20
+        this.innerRadius = 25
         this.outerRadius = 35
       } else if (zoom > 3.5 && zoom <= 5) {
         this.newCircle.attr('display', 'block')
         this.showInnerText = true
-        this.innerRadius = 10
-        this.outerRadius = 20
+        this.innerRadius = 15
+        this.outerRadius = 25
       } else if (zoom < 3.5 && zoom >= 2.5) {
         this.newCircle.attr('display', 'block')
         this.showInnerText = false
         this.innerRadius = 0
-        this.outerRadius = 10
+        this.outerRadius = 15
       } else if (zoom <= 2.5 && zoom > 1.5) {
         this.newCircle.attr('display', 'block')
         this.showInnerText = false

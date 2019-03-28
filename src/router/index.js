@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Map from '@/components/Map'
-
+import MyMap from '@/components/Map'
+import Calender from '@/components/Calender'
+import Heatcircle from '@/components/Heatcircle'
 Vue.use(Router)
 
 export default new Router({
@@ -9,7 +10,15 @@ export default new Router({
     {
       path: '/',
       name: 'HelloWorld',
-      component: Map
+      component: MyMap
+    }, {
+      path: '/calender',
+      name: 'Calender',
+      component: Calender
+    }, {
+      path: '/heatcircle',
+      name: 'Heatcircle',
+      component: Heatcircle
     }
   ]
 })

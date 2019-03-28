@@ -22,6 +22,8 @@ connection.connect(function(err){
 })
 
 router.get('/', function(req, res) {
+  let type = req.query.type;
+  let space = req.query.space;
   // let sql = `SELECT DISTINCT stationName FROM station WHERE city='${req.params.city}'`;
   let tablenameSql = "select table_name from information_schema.tables where table_schema='air_quality' AND table_name LIKE '%m';"
   connection.query(tablenameSql, (err, result) => {
@@ -31,8 +33,9 @@ router.get('/', function(req, res) {
     });
     let sql = '';
     monthTable.forEach(month => {
-      sql += `select date, AVG(value) as value from ${month} where type='AQI' GROUP BY date;`
+      sql += `select date, AVG(value) as value from ${month} where type='${type}' AND province='${space}' GROUP BY date;`
     })
+    console.log('++++++++++', sql)
     connection.query(sql, (err, res2) => {
       if (err) {
         throw err;
@@ -42,6 +45,7 @@ router.get('/', function(req, res) {
       res2.forEach(item => {
         json[item.date] = item.value
       })
+      res.setHeader('max-age', 640000)
       res.json(json);
     });
 

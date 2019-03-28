@@ -54,6 +54,7 @@
         trigger="click">
         <el-button title="确认" size="mini" @click="sureLayer" icon="el-icon-check" circle></el-button>
         <el-radio-group v-model="currentLayer">
+          <el-radio label="年轮图">年轮图</el-radio>
           <el-radio label="热力图">热力图</el-radio>
           <el-radio label="环图">环图</el-radio>
           <el-radio label="站点">站点</el-radio>
@@ -72,16 +73,15 @@ import {mapGetters} from 'vuex'
 import {addCircleLayer, removeCircleLayer} from '../js/layers/circleLayer.js'
 import {addHeatLayer, removeHeatLayer} from '../js/layers/heatLayer.js'
 import {addStationLayer, removeStationLayer} from '../js/layers/stationLayer.js'
+import {addYearLayer, removeYearLayer} from '../js/layers/yearsCircleLayer.js'
 export default {
-  components: {
-  },
   data () {
     return {
       currentLayer: '热力图'
     }
   },
   computed: {
-    ...mapGetters(['map', 'spaceScale', 'spaceScaleArr', 'catType', 'timeScale', 'timeScaleArr', 'catType'])
+    ...mapGetters(['map', 'spaceScale', 'spaceScaleArr', 'catType', 'timeScale', 'timeScaleArr'])
   },
   watch: {
     spaceScaleArr (newArr) {
@@ -102,6 +102,9 @@ export default {
       } else if (this.currentLayer === '环图') {
         this.removeOtherLayer()
         addCircleLayer(this.map, this.spaceScale, this.spaceScaleArr[this.spaceScaleArr.length - 1], this.timeScale, this.timeScaleArr, this.catType)
+      } else if (this.currentLayer === '年轮图') {
+        this.removeOtherLayer()
+        addYearLayer(this.map, scale, address)
       }
     },
     removeOtherLayer () {

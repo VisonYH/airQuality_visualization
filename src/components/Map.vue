@@ -43,7 +43,7 @@ export default {
 }
 </script>
 
-<style scoped lang='less'>
+<style lang='less'>
 .mapContainer {
   width: 100%;
   height: 100%;
@@ -56,5 +56,22 @@ export default {
   bottom:0;
   right: 0;
   left: 0;
+}
+.mapboxgl-popup-content {
+    background: #343332;
+    color: #fff;
+}
+.mapboxgl-popup-close-button{
+  display: inline-block;
+  width: 20px;
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+    border-top-color: #343332;
+}
+.popContainer{
+  svg{
+    display: block;
+    margin: 0 auto;
+  }
 }
 </style>

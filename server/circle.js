@@ -14,6 +14,7 @@ var connection = mysql.createConnection({
 router.post('/data', function(req, res) {
   let params = req.body;
   let {type, timeScale, time, spaceScale, address} = params;
+  console.log(type, timeScale, time, spaceScale, address)
   let sql = '';
   let tableName = formatTableName(time, timeScale);
   let nextSS = nextSpaceScale(spaceScale)
@@ -22,6 +23,7 @@ router.post('/data', function(req, res) {
   } else {
     sql = `SELECT ${nextSS} as label, AVG(value) as value, date FROM ${tableName} WHERE type='${type}' AND ${spaceScale}='${address}' GROUP BY ${nextSS},date; `
   }
+  console.log(sql)
   connection.query(sql, (err, result) => {
     res.json(formateRes(result))
   })
@@ -38,6 +40,7 @@ router.post('/update', (req, res) => {
     let tableName = formatTableName(time, timeScale);
     console.log(type, time, timeScale, space, tableName);
     sql = `SELECT ${nextSS} as label, AVG(value) as value, date FROM ${tableName} WHERE type='${type}' AND ${nextSS}='${space}' GROUP BY date; `
+    console.log(sql)
     connection.query(sql, (err, result) => {
       console.log(result)
       res.json(result)
@@ -50,6 +53,7 @@ router.post('/update', (req, res) => {
         sql += `SELECT ${nextSS} as label, AVG(value) as value, date, hour FROM ${table} WHERE type='${type}' AND date='${time}' AND ${nextSS}='${space}' GROUP BY hour;`
       })
       connection.query(sql, (err, result) => {
+        console.log(sql)
         result = flatten(result)
         let obj = {}
         result.forEach(item => {

@@ -206,6 +206,113 @@ exports.timeBasedData = function (connection, type, spaceScale, address, timeSca
     }
   }
 }
+let timeV
+let multiLineV
+exports.multiLine = function (connection, type, spaceScale, address, timeScale, time, callback) {
+  let sql = ''
+  let XVar = formatX('time', spaceScale, timeScale);
+  if (timeScale === 'year') {
+    let tableName = formatTableName(time, timeScale);
+    if (spaceScale === 'station') {
+      connection.query(`SELECT stationId FROM station WHERE stationName='${address}'`, (err, res) => {
+        let stationId = res[0].stationId
+        sql = `SELECT AVG(value) AS value, ${XVar} as date FROM ${tableName} WHERE stationId='${stationId}' AND type='${type}' GROUP BY ${XVar};`
+        console.log(sql)
+        connection.query(sql, function(err, result) {
+          result.map(item => {
+            item.value = Math.round(item.value);
+            return item;
+          })
+          callback(result);
+        })
+      })
+    } else {
+      if (spaceScale === 'all') {
+        sql = `SELECT AVG(value) AS value, ${XVar} as date FROM ${tableName} WHERE type='${type}' GROUP BY ${XVar};`
+      }  else {
+        sql = `SELECT AVG(value) AS value, ${XVar} as date FROM ${tableName} WHERE ${spaceScale}='${address}' AND type='${type}' GROUP BY ${XVar};`
+      }
+      console.log(sql)
+      connection.query(sql, function(err, result) {
+        result.map(item => {
+          item.value = Math.round(item.value);
+          return item;
+        })
+        callback(result);
+      })
+    }
+  }
+  if (timeScale === 'month') {
+    // if (spaceScale === 'station') {
+    //   connection.query(`SELECT stationId FROM station WHERE stationName='${address}'`, (err, res) => {
+    //     let stationId = res[0].stationId
+    //     sql = `SELECT value, ${XVar} as date FROM ${stationId} WHERE date='${time}' AND type='${type}';`
+    //     connection.query(sql, function(err, result) {
+    //       result = catgorifyH(result, 'date')
+    //       callback(result);
+    //     })
+    //   })
+    // } else {
+      if (multiLineV && timeV === time) {
+
+        callback(multiLineV);
+        return
+      }
+      timeV = time
+      getTables(connection, spaceScale, address, function(tables) {
+        if (spaceScale === 'all') {
+          // console.log('=============', tables, type, spaceScale, address, timeScale, time);
+          for(let table of tables) {
+            sql += `SELECT value, ${XVar} as date, hour,province FROM ${table} WHERE type='${type}' AND date LIKE '${time}%';`
+          }
+        }
+        else {
+          for(let table of tables) {
+            sql += `SELECT value, ${XVar} as date FROM ${table} WHERE type='${type}' AND ${spaceScale}='${address}' AND date='${time}';`
+          }
+        }
+        // console.log(sql)
+        connection.query(sql, function(err, result) {
+          result = catgorifyHour(result, 'date')
+          // console.log(result)
+          multiLineV = result
+          callback(result);
+        })
+      })
+    // }
+  }
+  if (timeScale === 'day') {
+      if (spaceScale === 'station') {
+        connection.query(`SELECT stationId FROM station WHERE stationName='${address}'`, (err, res) => {
+          let stationId = res[0].stationId
+          sql = `SELECT value, ${XVar} as date FROM ${stationId} WHERE date='${time}' AND type='${type}';`
+          connection.query(sql, function(err, result) {
+            result = catgorifyH(result, 'date')
+            callback(result);
+          })
+        })
+      } else {
+        getTables(connection, spaceScale, address, function(tables) {
+          if (spaceScale === 'all') {
+            for(let table of tables) {
+              sql += `SELECT value, ${XVar} as date FROM ${table} WHERE type='${type}' AND date='${time}';`
+            }
+          }
+          else {
+            for(let table of tables) {
+              sql += `SELECT value, ${XVar} as date FROM ${table} WHERE type='${type}' AND ${spaceScale}='${address}' AND date='${time}';`
+            }
+          }
+          // console.log(sql)
+          connection.query(sql, function(err, result) {
+            result = catgorifyH(result, 'date')
+            // console.log(result)
+            callback(result);
+          })
+        })
+    }
+  }
+}
 function formatTableName (time, timeScale) {
   let tableName
   if (timeScale === 'year') {
@@ -265,6 +372,34 @@ function catgorifyH (arr, XVar) {
   for (let item in catObj) {
     let temp = {};
     temp[XVar] = item;
+    let length = catObj[item].length
+    catObj[item] = catObj[item].reduce((a, b) => {
+      return a + b
+    })
+    catObj[item] = Math.round(catObj[item] / length);
+    temp.value = catObj[item];
+    res.push(temp)
+  }
+  return res
+}
+function catgorifyHour (arr) {
+  let catObj = {};
+
+  arr = flatten(arr);
+  arr.forEach(inner => {
+    let key = inner['date'] + (inner['hour'].length === 1 ? ('0' + inner['hour']) : inner['hour'])
+    if (!catObj[key]) {
+      catObj[key] = [inner.value]
+    } else {
+      catObj[key].push(inner.value)
+    }
+  })
+  // console.log(catObj)
+  let res = []
+  for (let item in catObj) {
+    let temp = {};
+    temp['date'] = item.slice(8);
+    temp['day'] = item.slice(0, 8);
     let length = catObj[item].length
     catObj[item] = catObj[item].reduce((a, b) => {
       return a + b

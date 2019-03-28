@@ -1,9 +1,20 @@
 import mapboxgl from 'mapbox-gl'
 import getStation from '../api/getStation'
-export function addStationLayer (map, scaleArr, scale) {
+import axios from 'axios'
+export function addStationLayer (map, scaleArr, scale, type) {
   getStation(callback, scaleArr, scale)
-
-  function callback (res) {
+  type = type.toLowerCase() || 'aqi'
+  async function callback (res) {
+    let fc = await axios.get('http://localhost:8080/api/realtime')
+    fc = fc.data
+    let fcObj = {}
+    fc.forEach(item => {
+      fcObj[item.station_code] = item
+    })
+    res.data.features.forEach(item => {
+      item.properties[type] = fcObj[item.properties.stationId][type.toLowerCase().replace('.', '_')]
+    })
+    console.log(res.data)
     map.addSource('station', {
       type: 'geojson',
       data: res.data
@@ -14,9 +25,27 @@ export function addStationLayer (map, scaleArr, scale) {
       'source': 'station',
       'paint': {
         'circle-radius': 5,
-        'circle-color': '#B42222'
+        // 'rgb(0, 228, 0)', 'rgb(255, 255, 0)', 'rgb(255, 126, 0)', 'rgb(255, 0, 0)', 'rgb(153, 0, 76)', 'rgb(126, 0, 35)'
+        'circle-color': [
+          'interpolate',
+          ['linear'],
+          ['get', type],
+          0,
+          'rgb(0, 228, 0)',
+          50,
+          'rgb(255, 255, 0)',
+          100,
+          'rgb(255, 126, 0)',
+          150,
+          'rgb(255, 0, 0)',
+          200,
+          'rgb(153, 0, 76)',
+          300,
+          'rgb(126, 0, 35)'
+        ]
       }
     })
+    // console.log(map.getLayer('station'))
     map.on('click', 'station', function (e) {
       var coordinates = e.features[0].geometry.coordinates.slice()
       var name = e.features[0].properties.stationName
@@ -30,7 +59,7 @@ export function addStationLayer (map, scaleArr, scale) {
       }
       new mapboxgl.Popup()
         .setLngLat(coordinates)
-        .setHTML(city + ': ' + name)
+        .setHTML(city + ': ' + name + '<br>' + type.toUpperCase() + ': ' + e.features[0].properties[type])
         .addTo(map)
     })
     // Change the cursor to a pointer when the mouse is over the places layer.

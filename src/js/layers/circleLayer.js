@@ -67,6 +67,14 @@ export async function addCircleLayer (map, spaceScale, space, timeScale, timeSca
     var canvas = map.getCanvasContainer()
     canvas.querySelector('.circleContainer') && canvas.querySelector('.circleContainer').remove()
     posData.forEach(data => {
+      if (data.name === '天津市') {
+        data.pos[0] += 0.7
+        data.pos[1] -= 0.7
+      }
+      if (data.name === '河北省') {
+        data.pos[1] -= 1.5
+        data.pos[0] -= 0.9
+      }
       let g = new Circle(canvas, data.data, {type, spaceScale, timeScale, time, space: data.name})
       map.on('viewreset', update)
       map.on('move', update)

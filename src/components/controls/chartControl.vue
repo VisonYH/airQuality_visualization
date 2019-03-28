@@ -76,7 +76,7 @@ export default {
       this.mXVar(newV)
       this.selectedConfigChart = ''
       if (newV === 'time') {
-        this.configChart = ['rose', 'line']
+        this.configChart = ['rose', 'line', 'multiline']
       } else if (newV === 'space') {
         this.configChart = ['map']
       }

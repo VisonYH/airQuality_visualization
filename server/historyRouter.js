@@ -1,5 +1,5 @@
 var express = require('express');
-const {getStation, getStationData, spaceBasedData, timeBasedData} = require('./utils')
+const {getStation, getStationData, spaceBasedData, timeBasedData, multiLine} = require('./utils')
 var router = express.Router();
 var mysql = require('mysql');
 var connection = mysql.createConnection({
@@ -33,6 +33,13 @@ router.post('/data/time', function(req, res) {
   let {type, timeScale, time, spaceScale, address} = params;
   // console.log(type, timeScale, time, spaceScale, address);
   timeBasedData(connection, type, spaceScale, address, timeScale, time, function (data) {
+    res.json(data)
+  })
+})
+router.post('/data/multiline', (req, res) => {
+  let params = req.body;
+  let {type, timeScale, time, spaceScale, address} = params;
+  multiLine(connection, type, spaceScale, address, timeScale, time, function (data) {
     res.json(data)
   })
 })
